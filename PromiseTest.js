@@ -118,7 +118,7 @@ Promise.prototype.then = function (onFulfilled, onRejected) {
  */
 function resolvePromise(promise2, x, resolve, reject) {
   let self = this;
-  console.log("执行resolvePromise()方法，id:",self.id);
+  console.log("执行resolvePromise()方法，self=== global:",self===global);
     //PromiseA+ 2.3.1
     if (promise2 === x) {
         reject(new TypeError('Chaining cycle'));
