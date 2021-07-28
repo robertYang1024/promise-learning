@@ -148,7 +148,12 @@ const resolvePromise = (promise, result, transitionResolve, transitionReject) =>
 
   transitionResolve(result)
 }
-// module.exports = Promise
+
+Promise.resolve = value => new Promise(resolve => resolve(value))
+Promise.reject = reason => new Promise((_, reject) => reject(reason))
+
+// export default Promise
+module.exports = Promise
 
 // new Promise((resolve) => {
 //   resolve(11);

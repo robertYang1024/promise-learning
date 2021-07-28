@@ -300,7 +300,7 @@ object.assign@^4.1.2:
     has-symbols "^1.0.1"
     object-keys "^1.1.1"
 
-promises-aplus-tests@^2.1.2:
+promises-aplus-tests@*:
   version "2.1.2"
   resolved "https://registry.npm.taobao.org/promises-aplus-tests/download/promises-aplus-tests-2.1.2.tgz#76b7c5638968720861969cfbcd8795afd274885c"
   integrity sha1-drfFY4locghhlpz7zYeVr9J0iFw=

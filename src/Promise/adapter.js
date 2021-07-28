@@ -1,4 +1,5 @@
 const Promise = require("./Promise.js")
+// import Promise from "./Promise.js"
 
 const resolved = value => Promise.resolve(value)
 const rejected = reason => Promise.reject(reason)
