@@ -13,7 +13,12 @@ function Promise (fn) {
   this.result = null;
   this.callbacks = [];
 
+  let ignore = false; // 只调用一次
+
   resolve = (result) => {
+    if(ignore) return;
+    ignore = true;
+
     // 1, 如果value是自身，则报错
     if (result === this) {
       let  reason = new TypeError('Can not fulfill promise with itself');
@@ -42,6 +47,9 @@ function Promise (fn) {
   };
 
   reject = (reason) => {
+    if(ignore) return;
+    ignore = true;
+
     this.state = REJECTED;
     this.result = reason;
 
@@ -82,7 +90,7 @@ Promise.prototype.then = function(onFulfilled, onRejected) {
   
 }
 
-handleCallbacks = (callbacks, that) => {
+const handleCallbacks = (callbacks, that) => {
   while (callbacks.length > 0) {
     let callback = callbacks.shift();
     
@@ -90,22 +98,26 @@ handleCallbacks = (callbacks, that) => {
     
     const {onFulfilled, onRejected, resolve, reject} = callback;
 
-    switch (that.state) {
-      case FULFILLED:
-        // 需要放到timeout里，不然通不过单元测试
-        setTimeout(() => {
-          isFunction(onFulfilled) 
-                        ? resolve(onFulfilled(that.result))
-                        : resolve(that.result);
-        }, 0);
-          break;
-      case REJECTED:
-        setTimeout(() => {
-          isFunction(onRejected) 
-                        ? reject(onRejected(that.result))
-                        : reject(that.result);
-        }, 0);
-          break;
+    try {
+      switch (that.state) {
+        case FULFILLED:
+          // 需要放到timeout里，不然通不过单元测试  resolve是在当前同步代码之后执行的
+          setTimeout(() => {
+            isFunction(onFulfilled) 
+                          ? resolve(onFulfilled(that.result))
+                          : resolve(that.result);
+          }, 0);
+            break;
+        case REJECTED:
+          setTimeout(() => {
+            isFunction(onRejected) 
+                          ? reject(onRejected(that.result))
+                          : reject(that.result);
+          }, 0);
+            break;
+      }
+    } catch (error) {
+      reject(error);
     }
   }
 }
