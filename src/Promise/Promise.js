@@ -74,7 +74,7 @@ Promise.prototype.then = function(onFulfilled, onRejected) {
       this.callbacks.push(callback);      // 把then的参数和new prommise的resolve、reject封装成对象，放进当前promise（this）的callbacks里面
                                           // 当前promise的状态变为fulfilled后，就会把callbacks里面的任务取出来执行
     } else {
-      setTimeout(() => handleCallback(callback, this.state, this.result), 0)
+      setTimeout(() => handleCallback(callback, this.state, this.result), 0);  // 箭头函数的this是其定义位置上下文的this值,即是当前的this，不是new promise的this
     }
   })
 }
@@ -153,16 +153,16 @@ Promise.resolve = value => new Promise(resolve => resolve(value))
 Promise.reject = reason => new Promise((_, reject) => reject(reason))
 
 // export default Promise
-module.exports = Promise
+// module.exports = Promise
 
-// new Promise((resolve) => {
-//   resolve(11);
-// }).then((res) => {
-//   console.log('第一次then：',res);
-// }).then((res) => {
-//   // 结果为undefined，因为上一个then的入参返回值是 void
-//   console.log('第二次then：',res);
-// }); 
+new Promise((resolve) => {
+  resolve(11);
+}).then((res) => {
+  console.log('第一次then：',res);
+}).then((res) => {
+  // 结果为undefined，因为上一个then的入参返回值是 void
+  console.log('第二次then：',res);
+}); 
 
 
 // function Name(params) {

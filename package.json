@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "test": "promises-aplus-tests src/Promise/adapter"
+    "test": "promises-aplus-tests src/Promise/adapter",
+    "test2": "promises-aplus-tests src/MyPromise/adapter"
   },
   "dependencies": {
     "promises-aplus-tests": "*"
