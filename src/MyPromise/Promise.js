@@ -77,15 +77,26 @@ Promise.prototype.then = function(onFulfilled, onRejected) {
 
     }else if (that.state === FULFILLED) {
       setTimeout(() => {
-        // resolve是箭头函数，this是其定义位置上下文的this值；如果不用箭头函数，那就要用中间变量了
-        isFunction(onFulfilled)? resolve(onFulfilled(that.result)) : resolve(that.result);
+        try {
+          // resolve是箭头函数，this是其定义位置上下文的this值；如果不用箭头函数，那就要用中间变量了
+          isFunction(onFulfilled)? resolve(onFulfilled(that.result)) : resolve(that.result);
+          
+        } catch (error) {
+          reject(error);
+        }
       }, 0);
       
     }else if (that.state === REJECTED) {
       setTimeout(() => {
-        isFunction(onRejected)? reject(onRejected(that.result)) : reject(that.result);
+        try {
+          
+          isFunction(onRejected)? reject(onRejected(that.result)) : reject(that.result);
+        } catch (error) {
+          reject(error);
+        }
       }, 0);
     }
+   
   });
   
 }
@@ -98,47 +109,61 @@ const handleCallbacks = (callbacks, that) => {
     
     const {onFulfilled, onRejected, resolve, reject} = callback;
 
-    try {
       switch (that.state) {
         case FULFILLED:
           // 需要放到timeout里，不然通不过单元测试  resolve是在当前同步代码之后执行的
           setTimeout(() => {
-            isFunction(onFulfilled) 
-                          ? resolve(onFulfilled(that.result))
-                          : resolve(that.result);
+            try {
+
+              isFunction(onFulfilled) 
+                            ? resolve(onFulfilled(that.result))
+                            : resolve(that.result);
+            } catch (error) {
+              reject(error);
+            }
           }, 0);
             break;
         case REJECTED:
           setTimeout(() => {
-            isFunction(onRejected) 
-                          ? reject(onRejected(that.result))
-                          : reject(that.result);
+            try {
+              
+              isFunction(onRejected) 
+                            ? reject(onRejected(that.result))
+                            : reject(that.result);
+            } catch (error) {
+              reject(error);
+            }
           }, 0);
             break;
       }
-    } catch (error) {
-      reject(error);
-    }
   }
 }
 
 Promise.resolve = value => new Promise(resolve => resolve(value));
 Promise.reject = reason => new Promise((_, reject) => reject(reason));
 
-module.exports = Promise
+// module.exports = Promise
 
-// let t1 = new Promise((resolve) => {
-//   resolve(11);
-// })
+let t1 = new Promise((resolve) => {
+  resolve(11);
+})
 
-// let t2 = t1.then((res) => {
-//   console.log('第一次then：',res);
-// })
+let t2 = t1.then((res) => {
+  console.log('第一次then：',res);
+  return res;
+})
 
-// let t3 = t2.then((res) => {
-//   // 结果为undefined，因为上一个then的入参返回值是 void
-//   console.log('第二次then：',res);
-// }); 
-// console.log(t1);
-// console.log(t2);
-// console.log(t3);
+let t3 = t2.then((res) => {
+  // 结果为undefined，因为上一个then的入参返回值是 void
+  console.log('第二次then：',res);
+  throw new TypeError("测试error");
+}); 
+
+let t4 = t3.then((res) => {
+  // 结果为undefined，因为上一个then的入参返回值是 void
+  console.log('第三次then：',res);
+}); 
+console.log(t1);
+console.log(t2);
+console.log(t3);
+console.log(t4);
