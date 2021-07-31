@@ -152,6 +152,5 @@ const resolvePromise = (promise, result, transitionResolve, transitionReject) =>
 Promise.resolve = value => new Promise(resolve => resolve(value))
 Promise.reject = reason => new Promise((_, reject) => reject(reason))
 
-// export default Promise
-// module.exports = Promise
+module.exports = Promise
 

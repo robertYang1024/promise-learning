@@ -73,14 +73,7 @@ const changeToReject = reason => {
   try {
     fn(resolve, reject);
   } catch (error) {
-    // 这里也要做判断
-    if(ignore) return;
-    ignore = true;
-
-    this.state = REJECTED;
-    this.result = error;
-
-    handleCallbacks(this.callbacks, this);
+    reject(error);
   }
 
 }
