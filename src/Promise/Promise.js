@@ -155,26 +155,3 @@ Promise.reject = reason => new Promise((_, reject) => reject(reason))
 // export default Promise
 // module.exports = Promise
 
-let t1 = new Promise((resolve) => {
-  resolve(11);
-})
-
-let t2 = t1.then((res) => {
-  console.log('第一次then：',res);
-  return res;
-})
-
-let t3 = t2.then((res) => {
-  // 结果为undefined，因为上一个then的入参返回值是 void
-  console.log('第二次then：',res);
-  throw new TypeError("测试error");
-}); 
-
-let t4 = t3.then((res) => {
-  // 结果为undefined，因为上一个then的入参返回值是 void
-  console.log('第三次then：',res);
-},reject => console.log(reject)); 
-console.log(t1);
-console.log(t2);
-console.log(t3);
-console.log(t4);

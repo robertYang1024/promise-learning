@@ -15,6 +15,19 @@ function Promise (fn) {
 
   let ignore = false; // 只调用一次
 
+/** 这个还必须要抽出来，因为resolve的时候，第2点，要传改变状态的函数进去 */
+const changeToResolve = result => {    
+  this.state = FULFILLED;
+  this.result = result;
+  handleCallbacks(this.callbacks, this);
+}
+
+const changeToReject = reason => {
+  this.state = REJECTED;
+  this.result = reason;
+  handleCallbacks(this.callbacks, this);
+}
+
   resolve = (result) => {
     if(ignore) return;
     ignore = true;
@@ -22,21 +35,22 @@ function Promise (fn) {
     // 1, 如果value是自身，则报错
     if (result === this) {
       let  reason = new TypeError('Can not fulfill promise with itself');
-      return reject(reason);
+      // 这里不能直接调reject，因为ignore已经改了
+      return changeToReject(reason);
     }
     // 2, 如果是另一个 promise，那么沿用它的 state 和 result 状态。
     if (isPromise(result)) {
-      return result.then(resolve, reject);
+      return result.then(changeToResolve, changeToReject);
     }
     // 3, 如果 result 是一个 thenable 对象。先取 then 函数，再 call then 函数
     if (isThenable(result)) {
       try {
         let then = result.then;
         if (isFunction(then)) {
-          return new Promise(then.bind(result)).then(resolve, reject);
+          return new Promise(then.bind(result)).then(changeToResolve, changeToReject);
         }
       } catch (error) {
-        return reject(error);
+        return changeToReject(error);
       }
     }
 
@@ -59,8 +73,14 @@ function Promise (fn) {
   try {
     fn(resolve, reject);
   } catch (error) {
+    // 这里也要做判断
+    if(ignore) return;
+    ignore = true;
+
     this.state = REJECTED;
     this.result = error;
+
+    handleCallbacks(this.callbacks, this);
   }
 
 }

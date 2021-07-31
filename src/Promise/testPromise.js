@@ -45,9 +45,9 @@
 //   return t1;
 // });
 
-// let t3 = t2.then((res) => console.log('then 2 success,', res), 
-//     (res) => console.log('then 2，', res)
-// );
+// let t3 = t2.then((res) => console.log('then 2 success,', res), (res) => {
+//   console.log('then 2，', res);
+// });
 // console.log(t1);
 // console.log(t2);
 // console.log(t3);
